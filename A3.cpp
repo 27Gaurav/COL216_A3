@@ -12,7 +12,7 @@
 using namespace std;
 unsigned long long BLOCKSIZE ;
 unsigned long long L1_SIZE ;
-unsigned long long L1_ASSSOC; 
+unsigned long long L1_ASSOC; 
 unsigned long long L2_SIZE ;
 unsigned long long L2_ASSOC ;
 
@@ -26,106 +26,9 @@ unsigned long long L2_ASSOC ;
 // Hexadecimal number to Binary
 // function to convert
 // Hexadecimal to Binary Number
-void HexToBin(string hexdec)
-{
-	//Skips "0x" if present at beggining of Hex string
-	size_t i = (hexdec[1] == 'x' || hexdec[1] == 'X')? 2 : 0;
 
-	while (hexdec[i]) {
 
-		switch (hexdec[i]) {
-		case '0':
-			cout << "0000";
-			break;
-		case '1':
-			cout << "0001";
-			break;
-		case '2':
-			cout << "0010";
-			break;
-		case '3':
-			cout << "0011";
-			break;
-		case '4':
-			cout << "0100";
-			break;
-		case '5':
-			cout << "0101";
-			break;
-		case '6':
-			cout << "0110";
-			break;
-		case '7':
-			cout << "0111";
-			break;
-		case '8':
-			cout << "1000";
-			break;
-		case '9':
-			cout << "1001";
-			break;
-		case 'A':
-		case 'a':
-			cout << "1010";
-			break;
-		case 'B':
-		case 'b':
-			cout << "1011";
-			break;
-		case 'C':
-		case 'c':
-			cout << "1100";
-			break;
-		case 'D':
-		case 'd':
-			cout << "1101";
-			break;
-		case 'E':
-		case 'e':
-			cout << "1110";
-			break;
-		case 'F':
-		case 'f':
-			cout << "1111";
-			break;
-		case '.':
-			cout << ".";
-			break;
-		default:
-			cout << "\nInvalid hexadecimal digit "
-				<< hexdec[i];
-		}
-		i++;
-	}
-}
 
-// driver code
-// int main()
-// {
-
-// 	// Get the Hexadecimal number
-// 	string hexdec = "1AC5";
-
-// 	// Convert HexaDecimal to Binary
-// 	cout << "";HexToBin(hexdec);
-
-// 	return 0;
-// }
-void constructCommands(ifstream &file)
-	{
-		string line;
-		while (getline(file, line))
-			parseCommand(line);
-		file.close();
-	}
-void parseCommand(string line){
-    vector<string> command ;
-    boost::tokenizer<boost::char_separator<char>> tokens(line, boost::char_separator<char>(" \t"));
-    for (auto&s : tokens){
-        command.push_back(s);}
-
-    commands.push_back(command);
-}
 // for (auto it = commands.begin(); it != commands.end(); ++it) {
 //     command =commands[it];
 
@@ -137,31 +40,196 @@ void parseCommand(string line){
 
 
 struct cache{
-    vector<vector<string>> tag;
-    vector<vector<int>> data;
+    vector<vector<int>> tag1;
+	vector<vector<int>> tag2;
+    vector<vector<int>> data1;
+	vector<vector<int>> data2;
+	vector<vector<int>>lru_l1;
+	vector<vector<int>>lru_l2;
     vector<vector<string>> commands;
-    int l1_read;
-    int l1_read_miss;
-    int l1_wrt;
-    int l1_wrt_miss;
-    int l1_miss_rate;
-    int l1_wrtbk;
-    int l2_read;
-    int l2_read_miss;
-    int l2_wrt;
-    int l2_wrt_miss;
-    int l2_miss_rate;
-    int l2_wrtbk;
 
 
-    cache(ifstream &files){
+	
+    
+        
+    int index_size_l1 = L1_SIZE/(BLOCKSIZE* L1_ASSOC );
+    
+	        
+
+    int index_size_l2 = L2_SIZE/(BLOCKSIZE*L2_ASSOC);
+   
+
+	void go(){
+
+	for (int i = 0 ; i<index_size_l1 ; i++){
+		vector<int> t;
+		for (int j=0 ; j< L1_ASSOC ; j++){
+			t.push_back(0);
+
+		}
+		lru_l1.push_back(t);
+	}
+	for (int i = 0 ; i<index_size_l2 ; i++){
+		vector<int> t;
+		for (int j=0 ; j< L2_ASSOC ; j++){
+			t.push_back(0);
+
+		}
+		lru_l2.push_back(t);
+	}
+	for (int i = 0 ; i<index_size_l1 ; i++){
+		vector<int> t;
+		for (int j=0 ; j< L1_ASSOC ; j++){
+			t.push_back(-1);
+
+		}
+		tag1.push_back(t);
+	}
+	for (int i = 0 ; i<index_size_l2 ; i++){
+		vector<int> t;
+		for (int j=0 ; j< L2_ASSOC ; j++){
+			t.push_back(-1);
+
+		}
+		tag2.push_back(t);
+	}
+	for (int i = 0 ; i<index_size_l1 ; i++){
+		vector<int> t;
+		for (int j=0 ; j< L1_ASSOC ; j++){
+			t.push_back(0);
+
+		}
+		data1.push_back(t);
+	}
+	for (int i = 0 ; i<index_size_l2 ; i++){
+		vector<int> t;
+		for (int j=0 ; j< L2_ASSOC ; j++){
+			t.push_back(0);
+
+		}
+		data2.push_back(t);
+	}}
+
+
+
+
+
+
+
+
+
+    int l1_read =0;
+    int l1_read_miss=0;
+    int l1_wrt=0;
+    int l1_wrt_miss=0;
+    int l1_miss_rate=0;
+    int l1_wrtbk=0;
+    int l2_read=0;
+    int l2_read_miss=0;
+    int l2_wrt=0;
+    int l2_wrt_miss=0;
+    int l2_miss_rate=0;
+    int l2_wrtbk=0;
+
+	void constructCommands(ifstream &file)
+	{
+		string line;
+		while (getline(file, line))
+			parseCommand(line);
+		file.close();
+	}
+	void parseCommand(string line){
+    vector<string> command ;
+    boost::tokenizer<boost::char_separator<char>> tokens(line, boost::char_separator<char>(" \t"));
+    for (auto&s : tokens){
+        command.push_back(s);}
+
+    commands.push_back(command);}
+
+
+    cache(ifstream &file){
             constructCommands(file);
     
     
     }
-    size = BLOCKSIZE*assoc*index
 
-    void read_req_l1(vector<strings> commander){
+    void read_req_l1(vector<string> commands){
+		int address = stoi(commands[1],nullptr,16);
+
+		int index_l1 = (address/BLOCKSIZE) % index_size_l1;
+    	int tag_l1 = (address % BLOCKSIZE) % index_size_l1;
+		int found = 0;
+		for (int i:tag1[index_l1]){
+			if (tag1[index_l1][i]==tag_l1){
+					int it = i;
+					found = 1;
+				}
+    		if (found == 1) {
+				 // Check if the element was found
+				l1_read++;
+				for (int j=0;j<L1_ASSOC;j++){
+					if (j!=it){
+						lru[index_l1][j]++;
+
+					}
+
+				};				
+				break;
+
+    } }
+		if ( found==0){
+			l1_read_miss++;
+			read_req_l2(vector<string> commander);
+			for (int i:tag1[index_l1]);
+			if (it != tag1[index_l1].end()){
+				for (int j=0;j<L1_ASSOC;j++){
+					if (j!=it){
+						lru[index_l1][j]++;
+
+					}
+
+				}
+				
+				tag[index_l1][it] = commander[1];
+			}
+			else{
+				for (int j=0;j<L1_ASSOC;j++){
+					if (j!=it){
+						lru[index_l1][j]++;
+
+					}
+
+				}
+				
+
+				//implement lru replacement
+			}			
+			}
+		}
+    
+
+	void read_req_l2(vector<string> commander){
+		int address = stoi(commander[1],nullptr,16);
+		int offset = address % BLOCKSIZE;
+		int index_l2 = (address/BLOCKSIZE) % index_size_l2;
+    	int tag_l2 = (address % BLOCKSIZE) % index_size_l2;
+        
+		for (int i=tag2.begin(); i< tag2.end(); ++i){
+
+			auto it =find(tag2[i].begin(), tag2[i].end(), tag_l2); // Search for the element
+    		if (it != tag2.end()) { // Check if the element was found
+        		l2_read++;
+				l1_fetch(tag_l2);
+				
+				break;
+
+    } }
+		if  i==tag2.end(){
+			// fetch from memory 
+
+		}
+		}
+    void wrt_req_l1(vector<string> commander){
         int address = stoi(commander[1],nullptr,16);
         int offset = address % BLOCKSIZE;
         
@@ -169,8 +237,25 @@ struct cache{
         int index_size_l1 = size/(BLOCKSIZE*L1_ASSOC);
         int index_l1 = (address/BLOCKSIZE) % index_size_l1;
         int tag_l1 = (address % BLOCKSIZE) % index_size;
-        
+
+		for (i=tag1.begin(); i< tag1.end(); ++i){
+
+			auto it =find(tag1[i].begin(), tag1[i].end(), tag_l1); // Search for the element
+    		if (it != tag1.end()) { // Check if the element was found
+				l1_wrt++;
+				data[i][it]= 1;
+
+				break;
+
+    } }
+		if i== tag1.end(){
+			l1_wrt_miss++;
+			read_req_l2(vector<string> commander)
+
+		}
     }
+        
+    
 
 };
 

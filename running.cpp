@@ -23,28 +23,28 @@ struct cache{
 
 
     vector<vector<string>> commands;
-    int l1_read;
-    int l1_read_miss;
-    int l1_wrt;
-    int l1_wrt_miss;
-    int l1_miss_rate;
-    int l1_wrtbk;
-    int l2_read;
-    int l2_read_miss;
-    int l2_wrt;
-    int l2_wrt_miss;
-    int l2_miss_rate;
-    int l2_wrtbk;
+    long long  l1_read;
+    long long  l1_read_miss;
+    long long  l1_wrt;
+    long long  l1_wrt_miss;
+    long long  l1_miss_rate;
+    long long  l1_wrtbk;
+    long long  l2_read;
+    long long  l2_read_miss;
+    long long  l2_wrt;
+    long long  l2_wrt_miss;
+    long long  l2_miss_rate;
+    long long  l2_wrtbk;
 
-    int reads;
-    int writes;
+    long long  reads;
+    long long  writes;
 
     vector<vector<long long>> tag1;
 	vector<vector<long long>> tag2;
-    vector<vector<int>> data1;
-	vector<vector<int>> data2;
-	vector<vector<int>>lru_l1;
-	vector<vector<int>>lru_l2;
+    vector<vector<long long >> data1;
+	vector<vector<long long >> data2;
+	vector<vector<long long >>lru_l1;
+	vector<vector<long long >>lru_l2;
 
 
 
@@ -64,49 +64,49 @@ struct cache{
 
 
 void act(){
-	for (int i = 0 ; i<index_size_l1 ; i++){
-		vector<int> t;
-		for (int j=0 ; j< L1_ASSOC ; j++){
+	for (long long  i = 0 ; i<index_size_l1 ; i++){
+		vector<long long > t;
+		for (long long  j=0 ; j< L1_ASSOC ; j++){
 			t.push_back(0);
 
 		}
 		lru_l1.push_back(t);
 	}
-	for (int i = 0 ; i<index_size_l2 ; i++){
-		vector<int> t1;
-		for (int j=0 ; j< L2_ASSOC ; j++){
+	for (long long  i = 0 ; i<index_size_l2 ; i++){
+		vector<long long > t1;
+		for (long long  j=0 ; j< L2_ASSOC ; j++){
 			t1.push_back(0);
 
 		}
 		lru_l2.push_back(t1);
 	}
-	for (int i = 0 ; i<index_size_l1 ; i++){
+	for (long long  i = 0 ; i<index_size_l1 ; i++){
 		vector<long long> t2;
-		for (int j=0 ; j< L1_ASSOC ; j++){
+		for (long long  j=0 ; j< L1_ASSOC ; j++){
 			t2.push_back(-1);
 
 		}
 		tag1.push_back(t2);
 	}
-	for (int i = 0 ; i<index_size_l2 ; i++){
+	for (long long  i = 0 ; i<index_size_l2 ; i++){
 		vector<long long> t3;
-		for (int j=0 ; j< L2_ASSOC ; j++){
+		for (long long  j=0 ; j< L2_ASSOC ; j++){
 			t3.push_back(-1);
 
 		}
 		tag2.push_back(t3);
 	}
-	for (int i = 0 ; i<index_size_l1 ; i++){
-		vector<int> t4;
-		for (int j=0 ; j< L1_ASSOC ; j++){
+	for (long long  i = 0 ; i<index_size_l1 ; i++){
+		vector<long long > t4;
+		for (long long  j=0 ; j< L1_ASSOC ; j++){
 			t4.push_back(0);
 
 		}
 		data1.push_back(t4);
 	}
-	for (int i = 0 ; i<index_size_l2 ; i++){
-		vector<int> t5;
-		for (int j=0 ; j< L2_ASSOC ; j++){
+	for (long long  i = 0 ; i<index_size_l2 ; i++){
+		vector<long long > t5;
+		for (long long  j=0 ; j< L2_ASSOC ; j++){
 			t5.push_back(0);
 
 		}
@@ -131,7 +131,7 @@ void act(){
         }
 
     void executeCommands(){
-        for(int i = 0 ; i < commands.size() ; i++){
+        for(long long  i = 0 ; i < commands.size() ; i++){
             if(commands[i][0]=="r"){
                 read_req_l1(commands[i]);
                 reads++;
@@ -145,7 +145,7 @@ void act(){
 
     bool isTag(vector<vector<long long>> tag_list , long long tag, long long index){
         bool result = false;
-        for(int i = 0;i<tag_list[index].size();i++){
+        for(long long  i = 0;i<tag_list[index].size();i++){
             if(tag_list[index][i]==tag){
                 result = true;
                 break;
@@ -163,17 +163,17 @@ void act(){
 
     void write_req_l1(vector<string> commander)
     {
-            long long address = stoi(commander[1],nullptr,16);
+            long long address = stol(commander[1],nullptr,16);
             long long offset = address % BLOCKSIZE;
-            // int index_size_l1 = size/(BLOCKSIZE*L1_ASSOC);
+            // long long  index_size_l1 = size/(BLOCKSIZE*L1_ASSOC);
             long long index_l1 = (address/BLOCKSIZE) % index_size_l1;
             long long tag_l1 = (address/(BLOCKSIZE *index_size_l1));
 
 
 
-		int found = 0;
-        int it;
-		for (int i=0;i<tag1[index_l1].size();i++)
+		long long  found = 0;
+        long long  it;
+		for (long long  i=0;i<tag1[index_l1].size();i++)
             {
                 if (tag1[index_l1][i]==tag_l1)
                     {
@@ -189,7 +189,7 @@ void act(){
             {
 				 // Check if the element was found
             
-            for (int j=0;j<L1_ASSOC;j++)
+            for (long long  j=0;j<L1_ASSOC;j++)
             {
                 if (j!=it)
                 {
@@ -209,15 +209,15 @@ void act(){
             l1_wrt_miss++;
 
 
-            int idx = -1;
-			for (int i=0;i<L1_ASSOC;i++)
+            long long  idx = -1;
+			for (long long  i=0;i<L1_ASSOC;i++)
                 {
                     if (tag1[index_l1][i] == -1)
                     {
                         idx = i;
                         tag1[index_l1][i] = tag_l1;
                         data1[index_l1][i] = 1;
-                        for (int j=0;j<L1_ASSOC;j++)
+                        for (long long  j=0;j<L1_ASSOC;j++)
                             {
                                 if (j!=i)
                                 {
@@ -237,17 +237,17 @@ void act(){
 
             if(idx == -1)
                 {
-                    vector<int> jack = lru_l1[index_l1];
-                    int max_idx = distance(jack.begin(), max_element(jack.begin(), jack.end()));
-                    int dirtyness = data1[index_l1][max_idx];
+                    vector<long long > jack = lru_l1[index_l1];
+                    long long  max_idx = distance(jack.begin(), max_element(jack.begin(), jack.end()));
+                    long long  dirtyness = data1[index_l1][max_idx];
                     if (dirtyness == 1)
                         {
-                            l1_wrtbk++;
+                            // l1_wrtbk++;
                             wrt_back_l1(tag1[index_l1][max_idx]*index_size_l1+index_l1);
                         }
                     tag1[index_l1][max_idx] = tag_l1;
                     data1[index_l1][max_idx] = 1;
-                    for (int j=0;j<L1_ASSOC;j++)
+                    for (long long  j=0;j<L1_ASSOC;j++)
                         {
                             if (j!=max_idx)
                             {
@@ -269,12 +269,12 @@ void act(){
     
     
     void read_req_l1(vector<string> commander){
-		long long address = stoi(commander[1],nullptr,16);
+		long long address = stol(commander[1],nullptr,16);
         long long index_l1 = (address/BLOCKSIZE) % index_size_l1;
     	long long tag_l1 = (address / BLOCKSIZE) / index_size_l1;
-		int found = 0;
-        int it;
-		for (int i=0;i<L1_ASSOC;i++)
+		long long  found = 0;
+        long long  it;
+		for (long long  i=0;i<L1_ASSOC;i++)
         {
 			if (tag1[index_l1][i]==tag_l1)
                 {
@@ -287,7 +287,7 @@ void act(){
         {
 				 // Check if the element was found
             l1_read++;
-            for (int j=0;j<L1_ASSOC;j++)
+            for (long long  j=0;j<L1_ASSOC;j++)
             {
                 if (j!=it)
                 {
@@ -307,13 +307,13 @@ void act(){
         else{
             l1_read_miss++;
 			read_req_l2(address);
-            int idx = -1;
-			for (int i=0;i<L1_ASSOC;i++){
+            long long  idx = -1;
+			for (long long  i=0;i<L1_ASSOC;i++){
                 if (tag1[index_l1][i] == -1){
                     idx = i;
                     tag1[index_l1][i] = tag_l1;
                     data1[index_l1][i] = 0;
-                    for (int j=0;j<L1_ASSOC;j++)
+                    for (long long  j=0;j<L1_ASSOC;j++)
                     {
                     if (j!=i)
                     {
@@ -332,12 +332,12 @@ void act(){
             if(idx == -1)
             {
                 idx = distance(lru_l1[index_l1].begin(), max_element(lru_l1[index_l1].begin(), lru_l1[index_l1].end()));
-                int dirtyness = data1[index_l1][idx];
+                long long  dirtyness = data1[index_l1][idx];
                 if (dirtyness == 0)
                 {
                     tag1[index_l1][idx] = tag_l1;
                     data1[index_l1][idx] = 0;
-                    for (int j=0;j<L1_ASSOC;j++)
+                    for (long long  j=0;j<L1_ASSOC;j++)
                     {
                     if (j!=idx)
                     {
@@ -356,7 +356,7 @@ void act(){
                    wrt_back_l1(tag1[index_l1][idx]*index_size_l1+index_l1);
                     tag1[index_l1][idx] = tag_l1;
                     data1[index_l1][idx] = 0;
-                    for (int j=0;j<L1_ASSOC;j++)
+                    for (long long  j=0;j<L1_ASSOC;j++)
                     {
                         if (j!=idx)
                             {
@@ -379,12 +379,12 @@ void act(){
 
     void wrt_back_l1(long long add){
         l1_wrtbk++;
-		// int address = stoi(commands[1],nullptr,16);
+		// long long  address = stol(commands[1],nullptr,16);
         long long index_l2 = (add) % index_size_l2;
     	long long tag_l2 = (add) / index_size_l2;
-		int found = 0;
-        int it;
-		for (int i=0;i<tag2[index_l2].size();i++)
+		long long  found = 0;
+        long long  it;
+		for (long long  i=0;i<tag2[index_l2].size();i++)
             {
                 if (tag2[index_l2][i]==tag_l2)
                     {
@@ -400,7 +400,7 @@ void act(){
             {
 				 // Check if the element was found
             
-            for (int j=0;j<L2_ASSOC;j++)
+            for (long long  j=0;j<L2_ASSOC;j++)
             {
                 if (j!=it)
                 {
@@ -420,15 +420,15 @@ void act(){
             l2_wrt_miss++;
 
 
-            int idx = -1;
-			for (int i=0;i<tag2[index_l2].size();i++)
+            long long  idx = -1;
+			for (long long  i=0;i<tag2[index_l2].size();i++)
             {
                 if (tag2[index_l2][i] == -1)
                 {
                     idx = i;
                     tag2[index_l2][i] = tag_l2;
                     data2[index_l2][i] = 1;
-                    for (int j=0;j<L2_ASSOC;j++)
+                    for (long long  j=0;j<L2_ASSOC;j++)
                     {
                     if (j!=i)
                     {
@@ -447,15 +447,15 @@ void act(){
 
             if(idx == -1)
             {
-                vector<int> jack = lru_l2[index_l2];
-                int max_idx = distance(jack.begin(), max_element(jack.begin(), jack.end()));
-                int dirtyness = data2[index_l2][max_idx];
+                vector<long long > jack = lru_l2[index_l2];
+                long long  max_idx = distance(jack.begin(), max_element(jack.begin(), jack.end()));
+                long long  dirtyness = data2[index_l2][max_idx];
                 if (dirtyness == 1){
                     l2_wrtbk++;
                 }
                 tag2[index_l2][max_idx] = tag_l2;
                 data2[index_l2][max_idx] = 1;
-                for (int j=0;j<L2_ASSOC;j++)
+                for (long long  j=0;j<L2_ASSOC;j++)
                 {
                     if (j!=max_idx)
                     {
@@ -481,9 +481,9 @@ void act(){
     void read_req_l2(long long address){
         long long index_l2 = (address/BLOCKSIZE) % index_size_l2;
     	long long tag_l2 = (address / BLOCKSIZE) / index_size_l2;
-		int found = 0;
-        int it;
-		for (int i=0;i<tag2[index_l2].size();i++)
+		long long  found = 0;
+        long long  it;
+		for (long long  i=0;i<tag2[index_l2].size();i++)
             {
                 if (tag2[index_l2][i]==tag_l2)
                     {
@@ -496,7 +496,7 @@ void act(){
             {
                     // Check if the element was found
                 l2_read++;
-                for (int j=0;j<L2_ASSOC;j++)
+                for (long long  j=0;j<L2_ASSOC;j++)
                 {
                     if (j!=it)
                     {
@@ -514,15 +514,15 @@ void act(){
         else
         {
             l2_read_miss++;
-            int idx = -1;
-			for (int i=0;i<tag2[index_l2].size();i++)
+            long long  idx = -1;
+			for (long long  i=0;i<tag2[index_l2].size();i++)
             {
                 if (tag2[index_l2][i] == -1)
                 {
                     idx = i;
                     tag2[index_l2][i] = tag_l2;
                     data2[index_l2][i] = 0;
-                    for (int j=0;j<L2_ASSOC;j++)
+                    for (long long  j=0;j<L2_ASSOC;j++)
                     {
                     if (j!=i)
                     {
@@ -541,15 +541,15 @@ void act(){
 
                 if(idx == -1)
                     {
-                        vector<int> jack = lru_l2[index_l2];
-                        int max_idx = distance(jack.begin(), max_element(jack.begin(), jack.end()));
-                        int dirtyness = data2[index_l2][max_idx];
+                        vector<long long > jack = lru_l2[index_l2];
+                        long long  max_idx = distance(jack.begin(), max_element(jack.begin(), jack.end()));
+                        long long  dirtyness = data2[index_l2][max_idx];
                         if (dirtyness == 1){
                             l2_wrtbk++;
                         }
                         tag2[index_l2][max_idx] = tag_l2;
                         data2[index_l2][max_idx] = 0;
-                        for (int j=0;j<L2_ASSOC;j++)
+                        for (long long  j=0;j<L2_ASSOC;j++)
                         {
                             if (j!=max_idx)
                             {
@@ -580,7 +580,7 @@ void act(){
 
 
 
-int main(int argc, char *argv[]){
+int main(int  argc, char *argv[]){
 
 
 
@@ -590,11 +590,11 @@ int main(int argc, char *argv[]){
     }
     else{
     ifstream file(argv[6]);
-    long long BLOCKSIZE = stoi(argv[1]);
-    long long L1_SIZE = stoi(argv[2]);
-    long long L1_ASSSOC = stoi(argv[3]);
-    long long L2_SIZE = stoi(argv[4]);
-    long long L2_ASSOC = stoi(argv[5]);
+    long long BLOCKSIZE = stol(argv[1]);
+    long long L1_SIZE = stol(argv[2]);
+    long long L1_ASSSOC = stol(argv[3]);
+    long long L2_SIZE = stol(argv[4]);
+    long long L2_ASSOC = stol(argv[5]);
 
     cache *cac;
     if (file.is_open()){
